@@ -1,0 +1,17 @@
+{
+  "name": "melon",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "excalibur": "^0.28.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+    "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./out --minify",
+    "serve": "bunx serve out",
+    "dev": "bun run build --watch & bun run serve"
+  }
+}
