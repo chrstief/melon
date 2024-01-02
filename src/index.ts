@@ -13,11 +13,11 @@ import { Level } from "./levels/level";
 import { Fruit, fruits, type FruitType } from "./actors/fruit";
 
 Physics.useRealisticPhysics();
-Physics.gravity = vec(0, 300);
+Physics.gravity = vec(0, 500);
 const game = new Engine({
   canvasElementId: "gameCanvas",
-  width: 800,
-  height: 600,
+  width: 600,
+  height: 700,
   displayMode: DisplayMode.FitScreen,
   pointerScope: PointerScope.Document,
 });
