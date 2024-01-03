@@ -36,6 +36,7 @@ function spawnFruit(
       !(ev.target instanceof Fruit) ||
       ev.other.fruitType !== ev.target.fruitType ||
       ev.target.fruitType === fruits.at(-1) ||
+      ev.other.isKilled() ||
       ev.target.isKilled()
     )
       return;
