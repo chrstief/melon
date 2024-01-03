@@ -3,6 +3,8 @@ import {
   Color,
   CollisionType,
   Vector,
+  Engine,
+  CollisionStartEvent,
 } from "excalibur";
 
 export type FruitType = { type: string; radius: number; color: Color };
@@ -31,5 +33,26 @@ export class Fruit extends Actor {
       collisionType: collisionType,
     });
     this.fruitType = fruitType;
+  }
+
+  onInitialize(game: Engine): void {
+    if (this.fruitType === fruits.at(-1)) return;
+    this.on("collisionstart", (ev: CollisionStartEvent) => {
+      if (
+        !(ev.other instanceof Fruit) ||
+        ev.other.fruitType !== this.fruitType ||
+        ev.other.isKilled() ||
+        this.isKilled()
+      )
+        return;
+
+      ev.other.kill();
+      this.kill();
+      const mergedPosition = ev.contact.points[0];
+      const mergedFruitType = fruits[fruits.indexOf(this.fruitType) + 1];
+      game.currentScene.add(
+        new Fruit(mergedPosition, CollisionType.Active, mergedFruitType)
+      );
+    });
   }
 }

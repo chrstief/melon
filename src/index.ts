@@ -3,14 +3,12 @@ import {
   Engine,
   CollisionType,
   vec,
-  CollisionStartEvent,
   DisplayMode,
-  Vector,
   randomIntInRange,
   PointerScope,
 } from "excalibur";
 import { Level } from "./levels/level";
-import { Fruit, fruits, type FruitType } from "./actors/fruit";
+import { Fruit, fruits } from "./actors/fruit";
 
 Physics.useRealisticPhysics();
 Physics.gravity = vec(0, 500);
@@ -24,44 +22,18 @@ const game = new Engine({
 
 const level = new Level();
 
-function spawnFruit(
-  position: Vector,
-  collisionType: CollisionType,
-  fruitType: FruitType
-) {
-  const fruit = new Fruit(position, collisionType, fruitType);
-  fruit.on("collisionstart", (ev: CollisionStartEvent) => {
-    if (
-      !(ev.other instanceof Fruit) ||
-      !(ev.target instanceof Fruit) ||
-      ev.other.fruitType !== ev.target.fruitType ||
-      ev.target.fruitType === fruits.at(-1) ||
-      ev.other.isKilled() ||
-      ev.target.isKilled()
-    )
-      return;
-
-    ev.other.kill();
-    ev.target.kill();
-    const mergedPosition = ev.contact.points[0];
-    const mergedFruitType = fruits[fruits.indexOf(ev.target.fruitType) + 1];
-    spawnFruit(mergedPosition, CollisionType.Active, mergedFruitType);
-  });
-  level.add(fruit);
-  return fruit;
-}
-
-let circle = spawnFruit(
+let currentFruit = new Fruit(
   vec(game.halfDrawWidth, 30),
   CollisionType.PreventCollision,
   fruits[randomIntInRange(0, 2)]
 );
+level.add(currentFruit)
 
 game.input.pointers.primary.on("move", (evt) => {
-  circle.pos.x = clamp(
+  currentFruit.pos.x = clamp(
     evt.worldPos.x,
-    50 + circle.width / 2,
-    game.drawWidth - 50 - circle.width / 2
+    50 + currentFruit.width / 2,
+    game.drawWidth - 50 - currentFruit.width / 2
   );
 });
 
@@ -69,21 +41,22 @@ let canClick = true;
 game.input.pointers.primary.on("down", (evt) => {
   if (!canClick) return;
   canClick = false;
-  circle.body.collisionType = CollisionType.Active;
-  circle = spawnFruit(
+  currentFruit.body.collisionType = CollisionType.Active;
+  currentFruit = new Fruit(
     vec(0, 30),
     CollisionType.PreventCollision,
     fruits[randomIntInRange(0, 2)]
   );
-  circle.pos.x = clamp(
+  level.add(currentFruit);
+  currentFruit.pos.x = clamp(
     evt.worldPos.x,
-    50 + circle.width / 2,
-    game.drawWidth - 50 - circle.width / 2
+    50 + currentFruit.width / 2,
+    game.drawWidth - 50 - currentFruit.width / 2
   );
-  circle.graphics.visible = false;
+  currentFruit.graphics.visible = false;
   game.clock.schedule(() => {
     canClick = true;
-    circle.graphics.visible = true;
+    currentFruit.graphics.visible = true;
   }, 600);
 });
 
