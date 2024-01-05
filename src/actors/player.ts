@@ -5,45 +5,59 @@ import {
   vec,
   randomIntInRange,
   Color,
+  PointerEvent,
+  Vector,
 } from "excalibur";
 import { Fruit, fruits } from "./fruit";
 
 export class Player extends Actor {
-  constructor() {
-    super({ width: 100, height: 50, color: Color.White });
+  bottomLeftCorner: Vector;
+
+  constructor(color: Color) {
+    super({ width: 100, height: 50, color });
+    this.bottomLeftCorner = vec(-this.width / 2, this.height / 2);
   }
+
   onInitialize(game: Engine): void {
     this.pos = vec(game.halfDrawWidth, 30);
-    let heldFruit = this.newFruit();
-    game.currentScene.add(heldFruit);
+    this.spawnFruit();
 
-    game.input.pointers.primary.on("move", (evt) => {
-      const leftBoundary = 50 + heldFruit.width / 2;
-      const rightBoundary = game.drawWidth - 50 - heldFruit.width / 2;
-      const x = clamp(evt.worldPos.x, leftBoundary, rightBoundary);
-      this.pos.x = x + this.width / 2;
-      heldFruit.pos.x = x;
-    });
-
-    game.input.pointers.primary.on("down", (evt) => {
-      if (!heldFruit.graphics.visible) return;
-
-      heldFruit.body.collisionType = CollisionType.Active;
-      heldFruit = this.newFruit();
-      heldFruit.graphics.visible = false;
-      game.currentScene.add(heldFruit);
-
-      game.clock.schedule(() => {
-        heldFruit.graphics.visible = true;
-      }, 600);
-    });
+    game.input.pointers.primary.on("move", this.move.bind(this));
+    game.input.pointers.primary.on("down", this.dropHeldFruit.bind(this));
   }
-  private newFruit() {
-    return new Fruit(
-      this.pos.add(vec(-this.width / 2, this.height / 2)),
-      CollisionType.PreventCollision,
-      fruits[randomIntInRange(0, 2)]
+
+  private spawnFruit() {
+    this.addChild(
+      new Fruit(
+        this.bottomLeftCorner,
+        CollisionType.PreventCollision,
+        fruits[randomIntInRange(0, 2)]
+      )
     );
+  }
+
+  private dropHeldFruit() {
+    const heldFruit = this.children.at(0);
+    if (!heldFruit || !(heldFruit instanceof Fruit)) return;
+    heldFruit.unparent();
+    this.scene.add(heldFruit);
+    heldFruit.pos = this.pos.add(this.bottomLeftCorner);
+    heldFruit.body.collisionType = CollisionType.Active;
+
+    this.scene.engine.clock.schedule(() => {
+      this.spawnFruit();
+    }, 600);
+  }
+
+  private move(evt: PointerEvent) {
+    let heldFruitOffset = 0;
+    const heldFruit = this.children.at(0);
+    if (heldFruit && heldFruit instanceof Fruit)
+      heldFruitOffset = heldFruit.width / 2;
+    const leftBoundary = 50 + heldFruitOffset;
+    const rightBoundary = this.scene.engine.drawWidth - 50 - heldFruitOffset;
+    const x = clamp(evt.worldPos.x, leftBoundary, rightBoundary);
+    this.pos.x = x + this.width / 2;
   }
 }
 

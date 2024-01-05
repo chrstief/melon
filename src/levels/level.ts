@@ -1,11 +1,4 @@
-import {
-  Engine,
-  Actor,
-  Color,
-  CollisionType,
-  vec,
-  Scene,
-} from "excalibur";
+import { Engine, Actor, Color, CollisionType, vec, Scene } from "excalibur";
 import { Player } from "../actors/player";
 
 export class Level extends Scene {
@@ -34,6 +27,6 @@ export class Level extends Scene {
       collisionType: CollisionType.Fixed,
     });
     game.add(rightWall);
-    game.add(new Player())
+    game.add(new Player(Color.White));
   }
 }
