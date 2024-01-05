@@ -6,6 +6,7 @@ import {
   vec,
   Scene,
 } from "excalibur";
+import { Player } from "../actors/player";
 
 export class Level extends Scene {
   onInitialize(game: Engine) {
@@ -33,5 +34,6 @@ export class Level extends Scene {
       collisionType: CollisionType.Fixed,
     });
     game.add(rightWall);
+    game.add(new Player())
   }
 }
