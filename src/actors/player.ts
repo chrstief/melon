@@ -13,8 +13,8 @@ import { Fruit, fruits } from "./fruit";
 export class Player extends Actor {
   bottomLeftCorner: Vector;
 
-  constructor(color: Color) {
-    super({ width: 100, height: 50, color });
+  constructor(args: { color: Color }) {
+    super({ width: 100, height: 50, color: args.color });
     this.bottomLeftCorner = vec(-this.width / 2, this.height / 2);
   }
 
@@ -28,11 +28,10 @@ export class Player extends Actor {
 
   private spawnFruit() {
     this.addChild(
-      new Fruit(
-        this.bottomLeftCorner,
-        CollisionType.PreventCollision,
-        fruits[randomIntInRange(0, 2)]
-      )
+      new Fruit({
+        pos: this.bottomLeftCorner,
+        fruitType: fruits[randomIntInRange(0, 2)],
+      })
     );
   }
 

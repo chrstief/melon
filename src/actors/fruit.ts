@@ -25,14 +25,14 @@ export const fruits: FruitType[] = [
 export class Fruit extends Actor {
   fruitType: FruitType;
 
-  constructor(pos: Vector, collisionType: CollisionType, fruitType: FruitType) {
+  constructor(args: { pos: Vector; fruitType: FruitType }) {
     super({
-      pos: pos,
-      radius: fruitType.radius,
-      color: fruitType.color,
-      collisionType: collisionType,
+      pos: args.pos,
+      radius: args.fruitType.radius,
+      color: args.fruitType.color,
+      collisionType: CollisionType.PreventCollision,
     });
-    this.fruitType = fruitType;
+    this.fruitType = args.fruitType;
   }
 
   onInitialize(game: Engine): void {
@@ -48,11 +48,12 @@ export class Fruit extends Actor {
 
       ev.other.kill();
       this.kill();
-      const mergedPosition = ev.contact.points[0];
-      const mergedFruitType = fruits[fruits.indexOf(this.fruitType) + 1];
-      game.currentScene.add(
-        new Fruit(mergedPosition, CollisionType.Active, mergedFruitType)
-      );
+      const mergedFruit = new Fruit({
+        pos: ev.contact.points[0],
+        fruitType: fruits[fruits.indexOf(this.fruitType) + 1],
+      });
+      mergedFruit.body.collisionType = CollisionType.Active;
+      game.currentScene.add(mergedFruit);
     });
   }
 }

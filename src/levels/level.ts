@@ -27,6 +27,6 @@ export class Level extends Scene {
       collisionType: CollisionType.Fixed,
     });
     game.add(rightWall);
-    game.add(new Player(Color.White));
+    game.add(new Player({ color: Color.White }));
   }
 }
