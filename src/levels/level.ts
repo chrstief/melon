@@ -27,6 +27,15 @@ export class Level extends Scene {
       collisionType: CollisionType.Fixed,
     });
     game.add(rightWall);
-    game.add(new Player({ color: Color.White }));
+
+    game.add(new Player({ inputMethod: "Mouse", color: Color.White }));
+    // const gamePad1 = game.input.gamepads.at(0);
+    // const gamePad2 = game.input.gamepads.at(1);
+    // const gamePad3 = game.input.gamepads.at(2);
+    // const gamePad4 = game.input.gamepads.at(3);
+    // game.add(new Player({ inputMethod: gamePad1, color: Color.White }));
+    // game.add(new Player({ inputMethod: gamePad2, color: Color.Orange }));
+
+    
   }
 }
