@@ -1,26 +1,38 @@
 import {
   Actor,
-  Color,
   CollisionType,
   Vector,
   Engine,
   CollisionStartEvent,
+  ImageSource,
+  Sprite,
 } from "excalibur";
 
-export type FruitType = { type: string; radius: number; color: Color };
+export type FruitType = {
+  type: string;
+  radius: number;
+  imageSource: ImageSource;
+};
 export const fruits: FruitType[] = [
-  { type: "Blueberry", radius: 12, color: Color.Blue },
-  { type: "Cherry", radius: 15, color: Color.Red },
-  { type: "Lime", radius: 30, color: Color.Green },
-  { type: "Banana", radius: 40, color: Color.Yellow },
-  { type: "Orange", radius: 50, color: Color.Orange },
-  { type: "Apple", radius: 70, color: Color.Red },
-  { type: "Peach", radius: 80, color: Color.Rose },
-  { type: "Coconut", radius: 130, color: Color.Black },
-  { type: "Melon", radius: 150, color: Color.Chartreuse },
-  { type: "Ananas", radius: 170, color: Color.Yellow },
-  { type: "Watermelon", radius: 190, color: Color.Green },
-];
+  { type: "🙂", radius: 12 },
+  { type: "😇", radius: 15 },
+  { type: "😂", radius: 30 },
+  { type: "😷", radius: 40 },
+  { type: "😘", radius: 50 },
+  { type: "😵", radius: 70 },
+  { type: "😬", radius: 80 },
+  { type: "😶", radius: 130 },
+  { type: "😋", radius: 150 },
+  { type: "🤑", radius: 170 },
+  { type: "😲", radius: 190 },
+].map((emoji) => ({
+  ...emoji,
+  imageSource: new ImageSource(
+    `https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/${emoji.type
+      .codePointAt(0)!
+      .toString(16)}.svg`
+  ),
+}));
 
 export class Fruit extends Actor {
   fruitType: FruitType;
@@ -29,13 +41,22 @@ export class Fruit extends Actor {
     super({
       pos: args.pos,
       radius: args.fruitType.radius,
-      color: args.fruitType.color,
       collisionType: CollisionType.PreventCollision,
     });
     this.fruitType = args.fruitType;
   }
 
   onInitialize(game: Engine): void {
+    this.graphics.use(
+      new Sprite({
+        image: this.fruitType.imageSource,
+        destSize: {
+          width: this.width,
+          height: this.height,
+        },
+      })
+    );
+
     if (this.fruitType === fruits.at(-1)) return;
     this.on("collisionstart", (ev: CollisionStartEvent) => {
       if (

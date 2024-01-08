@@ -1,5 +1,6 @@
 import { Physics, Engine, vec, DisplayMode, PointerScope } from "excalibur";
 import { Level } from "./levels/level";
+import { loader } from "./resources/resources";
 
 Physics.useRealisticPhysics();
 Physics.gravity = vec(0, 500);
@@ -11,5 +12,8 @@ const game = new Engine({
   pointerScope: PointerScope.Document,
 });
 game.add("level", new Level());
-game.start();
-game.goToScene("level");
+game.start(loader).then(() => {
+  game.goToScene("level");
+});
+
+// game.showDebug(true);
