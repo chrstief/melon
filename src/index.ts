@@ -11,9 +11,10 @@ const game = new Engine({
   displayMode: DisplayMode.FitScreen,
   pointerScope: PointerScope.Document,
 });
+
+await game.start(loader);
+await game.screen.goFullScreen();
 game.add("level", new Level());
-game.start(loader).then(() => {
-  game.goToScene("level");
-});
+game.goToScene("level");
 
 // game.showDebug(true);
